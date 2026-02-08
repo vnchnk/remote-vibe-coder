@@ -1,0 +1,9 @@
+services:
+  code:
+    image: codercom/code-server:latest
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./projects:/home/coder/projects
+    environment:
+      - PASSWORD=${CODE_SERVER_PASSWORD:-vibe-coder}

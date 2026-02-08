@@ -1,0 +1,93 @@
+name: Server
+
+on:
+  workflow_dispatch:
+    inputs:
+      action:
+        description: "Action to perform"
+        required: true
+        type: choice
+        options:
+          - start
+          - stop
+          - status
+      cloud_provider:
+        description: "Cloud provider"
+        required: true
+        type: choice
+        default: hetzner
+        options:
+          - hetzner
+      cloud_server_type:
+        description: "Server type"
+        required: true
+        type: choice
+        default: cx23
+        options:
+          - cx23
+          - cx33
+          - cx43
+          - cpx22
+          - cax11
+      cloud_location:
+        description: "Server location"
+        required: true
+        type: choice
+        default: nbg1
+        options:
+          - nbg1
+          - hel1
+          - fsn1
+      repository:
+        description: "Repository to clone (owner/repo)"
+        required: false
+        type: string
+        default: "vnchnk/playground"
+      cloud_auto_delete:
+        description: "Auto-delete server after TTL"
+        required: true
+        type: boolean
+        default: true
+      cloud_ttl_minutes:
+        description: "Time to live in minutes (default 720 = 12h)"
+        required: true
+        type: string
+        default: "720"
+      cloud_warning_minutes:
+        description: "Warning before auto-delete in minutes (default 240 = 4h)"
+        required: true
+        type: string
+        default: "240"
+
+env:
+  SERVER_NAME: "remote-vibe-coder"
+
+jobs:
+  server:
+    runs-on: ubuntu-latest
+    environment: PROD
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install hcloud CLI
+        if: inputs.cloud_provider == 'hetzner'
+        run: |
+          curl -sL https://github.com/hetznercloud/cli/releases/latest/download/hcloud-linux-amd64.tar.gz | tar xz
+          sudo mv hcloud /usr/local/bin/
+
+      - name: Run action
+        env:
+          HETZNER_API_TOKEN: ${{ secrets.HETZNER_API_TOKEN }}
+          SSH_PUBLIC_KEY: ${{ secrets.SSH_PUBLIC_KEY }}
+          GH_PAT: ${{ secrets.GH_PAT }}
+          REPOSITORY: ${{ inputs.repository }}
+          CLOUD_SERVER_TYPE: ${{ inputs.cloud_server_type }}
+          CLOUD_LOCATION: ${{ inputs.cloud_location }}
+          CLOUD_AUTO_DELETE: ${{ inputs.cloud_auto_delete }}
+          CLOUD_TTL_MINUTES: ${{ inputs.cloud_ttl_minutes }}
+          CLOUD_WARNING_MINUTES: ${{ inputs.cloud_warning_minutes }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          chmod +x scripts/providers/${{ inputs.cloud_provider }}.sh
+          bash scripts/providers/${{ inputs.cloud_provider }}.sh ${{ inputs.action }}
