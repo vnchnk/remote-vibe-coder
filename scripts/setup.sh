@@ -26,17 +26,6 @@ npm install -g \
   @anthropic-ai/claude-code \
   @openai/codex
 
-# --- code-server ---
-curl -fsSL https://code-server.dev/install.sh | sh
-mkdir -p /root/.config/code-server
-cat > /root/.config/code-server/config.yaml <<EOF
-bind-addr: 0.0.0.0:8080
-auth: password
-password: vibe-coder
-cert: false
-EOF
-systemctl enable --now code-server@root
-
 # --- Docker ---
 apt-get install -y docker.io docker-compose-v2
 systemctl enable --now docker
@@ -62,6 +51,12 @@ if [[ -n "${REPO}" && -n "${GH_PAT}" ]]; then
   git config --global user.name "vnchnk"
   git config --global user.email "vnchnk@users.noreply.github.com"
 fi
+
+# --- devpanel (mobile-first dev dashboard) ---
+git clone https://github.com/vnchnk/remote-vibe-panel.git /opt/remote-vibe-panel
+cd /opt/remote-vibe-panel
+PROJECT_DIR="/root/${REPO_NAME:-project}" docker compose up -d --build
+cd /root
 
 # --- Config ---
 CLOUD_AUTO_DELETE="__CLOUD_AUTO_DELETE__"

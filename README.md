@@ -128,7 +128,7 @@ Sent right before the server is destroyed (either by auto-delete or manual delet
 - Node.js 22
 - `@anthropic-ai/claude-code` (Claude CLI)
 - `@openai/codex` (Codex CLI)
-- code-server on `:8080` (password: `vibe-coder`)
+- [remote-vibe-panel](https://github.com/vnchnk/remote-vibe-panel) on `:8080` — mobile-first dev panel (git, terminal, docker, db)
 - Docker + docker-compose
 - git, curl, tmux, htop, jq
 - Your repository cloned to `/root/<repo-name>` with git push/pull configured
@@ -156,7 +156,7 @@ Server name is fixed (`remote-vibe-coder`) — state lives in Hetzner itself, no
 scripts/providers/hetzner.sh   — create/destroy for Hetzner (hcloud CLI)
 scripts/setup.sh               — cloud-init: installs everything on the server
 scripts/notify.sh              — Telegram bot: notifications + inline keyboard callbacks
-docker-compose.yml             — code-server only (CLI tools run on host)
+docker-compose.yml             — devpanel (remote-vibe-panel)
 ```
 
 On the server, three systemd services manage the lifecycle:

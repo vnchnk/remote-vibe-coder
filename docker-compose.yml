@@ -1,9 +1,13 @@
 services:
-  code:
-    image: codercom/code-server:latest
+  devpanel:
+    build: ./devpanel
     ports:
-      - "8080:8080"
+      - "8080:3000"
     volumes:
-      - ./projects:/home/coder/projects
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /root/project:/app/project
+      - /root/.claude:/root/.claude
     environment:
-      - PASSWORD=${CODE_SERVER_PASSWORD:-vibe-coder}
+      - PROJECT_DIR=/app/project
+      - DATABASE_URL=${DATABASE_URL:-}
+    restart: unless-stopped
